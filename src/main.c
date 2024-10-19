@@ -191,6 +191,71 @@ void employee_functions(Request req, int client_sock) {
         strcpy(user.password, new_password);
         update_password(user);
     }
+
+    if (strcmp(req.action, "GET_ASSIGNED_LOANS") == 0) {
+        int loan_count = 0;
+        int employee_id = req.user.id;
+
+        
+        Loan* assigned_loans = get_assigned_loans(employee_id, &loan_count);
+        if (assigned_loans == NULL) {
+            loan_count = 0;
+            printf("No assigned loans found for employee ID %d.\n", employee_id);
+        }
+
+        ssize_t bytes_sent = send(client_sock, &loan_count, sizeof(int), 0);
+        if (bytes_sent < 0) {
+            perror("Failed to send loan count to client");
+        }
+
+        if (loan_count > 0) {
+            ssize_t total_size = loan_count * sizeof(Loan);
+            bytes_sent = send(client_sock, assigned_loans, total_size, 0);
+            if (bytes_sent < 0) {
+                perror("Failed to send assigned loan data to client");
+            } else {
+                printf("Sent %d assigned loan(s) to employee ID %d.\n", loan_count, employee_id);
+            }
+            free(assigned_loans);
+        }
+    }
+
+    if (strcmp(req.action, "UPDATE_LOAN") == 0) {
+        update_loan(req.loan);
+    }
+
+
+
+    if (strcmp(req.action, "GET_TRANSACTIONS") == 0) {
+    int customer_id = req.user.id;
+
+    int transaction_count = 0;
+    Transaction* transactions = get_transactions_for_customer(customer_id, &transaction_count);
+
+    ssize_t bytes_sent = send(client_sock, &transaction_count, sizeof(int), 0);
+    if (bytes_sent < 0) {
+        perror("Failed to send transaction count");
+        return;
+    }
+
+   
+    if (transaction_count > 0) {
+      
+        ssize_t total_size = transaction_count * sizeof(Transaction);
+        bytes_sent = send(client_sock, transactions, total_size, 0);
+        if (bytes_sent < 0) {
+            perror("Failed to send transaction array");
+        } else {
+            printf("Sent %d transactions to the client.\n", transaction_count);
+        }
+
+        free(transactions);
+    } else {
+        printf("No transactions found for customer ID %d.\n", customer_id);
+    }
+}
+
+
 }
 
 void manager_function(Request req, int client_sock) {
@@ -238,7 +303,7 @@ void manager_function(Request req, int client_sock) {
         }
     }
 
-    if(strcmp(req.action, "CLEAR_FEEDBACK") == 0) {
+    if (strcmp(req.action, "CLEAR_FEEDBACK") == 0) {
         int id = req.user.id;
         update_feedback_review(id);
     }
@@ -268,7 +333,7 @@ void manager_function(Request req, int client_sock) {
     }
 
 
-    if(strcmp(req.action, "UPDATE_LOAN") == 0) {
+    if (strcmp(req.action, "UPDATE_LOAN") == 0) {
         update_loan(req.loan);
     }
 }

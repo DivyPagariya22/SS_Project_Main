@@ -18,13 +18,13 @@ typedef struct {
     char type[20];
 } Loan;
 
-// User struct to hold user information
+
 typedef struct {
-    int id;                  // Unique identifier for the user
-    char username[50];      // Username of the user
-    char password[50];      // Password of the user
-    int role;               // Role of the user (1: customer, 2: employee, 3: manager, 4: admin)
-    float account_balance;   // Account balance for the user
+    int id;
+    char username[50];
+    char password[50];
+    int role;
+    float account_balance;
 } User;
 
 typedef struct {

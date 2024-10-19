@@ -18,4 +18,6 @@ void update_feedback_review(int customerID);
 void addLoan(Loan loan);
 Loan* review_customer_loans(int* loan_count);
 void update_loan(Loan updated_loan);
+Loan* get_assigned_loans(int employee_id, int* loan_count);
+Transaction* get_transactions_for_customer(int customer_id, int* transaction_count);
 #endif // LOGIN_H
